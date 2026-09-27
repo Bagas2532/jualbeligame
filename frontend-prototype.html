@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GearVault — Marketplace Akun Game Aman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#12131A; --surface:#1C1E29; --surface2:#242739; --border:#2E3145;
+  --text:#EDEEF2; --sub:#9BA0B4; --mint:#6EE7B7; --amber:#F4B740; --red:#F27272;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#F6F6F8; --surface:#FFFFFF; --surface2:#EFEFF3; --border:#DEDFE6;
+    --text:#181A22; --sub:#5C6072;
+  }
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;height:100%;}
+h1,h2,h3,.brand{font-family:'Sora',sans-serif;}
+button{font-family:inherit;cursor:pointer;}
+.app{display:flex;min-height:100vh;}
+nav.side{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:20px 14px;display:flex;flex-direction:column;gap:4px;}
+.brand{font-size:19px;font-weight:700;margin:0 8px 22px;display:flex;align-items:center;gap:8px;}
+.brand span{color:var(--mint);}
+.navbtn{background:none;border:none;color:var(--sub);text-align:left;padding:10px 12px;border-radius:8px;font-size:14px;font-weight:500;}
+.navbtn.active{background:var(--surface2);color:var(--text);}
+.navbtn:hover{color:var(--text);}
+main{flex:1;min-width:0;padding:22px 26px 60px;overflow-x:auto;}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:12px;flex-wrap:wrap;}
+.topbar h1{font-size:20px;margin:0;}
+.wallet{display:flex;align-items:center;gap:14px;font-size:13px;color:var(--sub);}
+.wallet b{color:var(--text);font-size:15px;}
+.bell{position:relative;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:8px 10px;}
+.dot{position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--red);}
+.tab{display:none;}
+.tab.active{display:block;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px;}
+.gtag{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#12131A;}
+.row{display:flex;justify-content:space-between;align-items:center;}
+.verified{font-size:11px;color:var(--mint);border:1px solid var(--mint);padding:2px 7px;border-radius:20px;}
+.price{font-size:18px;font-weight:700;}
+.sub{color:var(--sub);font-size:12.5px;}
+.buybtn{margin-top:6px;background:var(--mint);color:#12131A;border:none;border-radius:8px;padding:9px;font-weight:600;font-size:13.5px;}
+.buybtn:hover{opacity:.9;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th{text-align:left;color:var(--sub);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--border);}
+td{padding:10px 10px;border-bottom:1px solid var(--border);}
+.badge{padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:600;}
+.b-escrow{background:rgba(244,183,64,.15);color:var(--amber);}
+.b-done{background:rgba(110,231,183,.15);color:var(--mint);}
+.b-dispute{background:rgba(242,114,114,.15);color:var(--red);}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.stat .n{font-size:22px;font-weight:700;}
+.stat .l{color:var(--sub);font-size:12px;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;}
+.overlay.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;max-width:420px;width:100%;max-height:85vh;overflow-y:auto;}
+.modal h3{margin:0 0 4px;}
+.step{display:flex;gap:10px;align-items:flex-start;padding:9px 0;font-size:13.5px;}
+.dotc{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;margin-top:1px;}
+.dotc.on{border-color:var(--mint);background:var(--mint);}
+.dotc.now{border-color:var(--amber);}
+.closebtn{float:right;background:none;border:none;color:var(--sub);font-size:18px;}
+.toastwrap{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));right:18px;display:flex;flex-direction:column;gap:8px;z-index:60;}
+.toast{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--mint);padding:11px 15px;border-radius:8px;font-size:13px;max-width:280px;}
+.paybtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.paybtns button{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px;}
+.paybtns button:hover{border-color:var(--mint);}
+input{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 11px;font-size:13.5px;width:100%;margin:8px 0;}
+.small{font-size:12px;color:var(--sub);line-height:1.5;}
+.complaint{border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:var(--surface);}
+.complaint .row{margin-bottom:6px;}
+.resolvebtn{background:none;border:1px solid var(--mint);color:var(--mint);border-radius:7px;padding:6px 10px;font-size:12px;}
+@media(max-width:720px){ .app{flex-direction:column;} nav.side{width:100%;flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border);} }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="side">
+    <div class="brand">🎮<span>Gear</span>Vault</div>
+    <button class="navbtn active" data-tab="market">Marketplace</button>
+    <button class="navbtn" data-tab="tx">Transaksi Saya</button>
+    <button class="navbtn" data-tab="wallet">Saldo & Deposit</button>
+    <button class="navbtn" data-tab="admin">Dashboard Admin</button>
+  </nav>
+  <main>
+    <div class="topbar">
+      <h1 id="pageTitle">Marketplace</h1>
+      <div class="wallet">
+        Saldo: <b id="balDisplay">Rp 0</b>
+        <button class="bell" onclick="toggleNotif()">🔔<span class="dot" id="notifDot"></span></button>
+      </div>
+    </div>
+
+    <div class="tab active" id="market">
+      <div class="grid" id="listingGrid"></div>
+    </div>
+
+    <div class="tab" id="tx">
+      <table><thead><tr><th>Item</th><th>Peran</th><th>Status</th><th>Nominal</th></tr></thead>
+      <tbody id="txBody"></tbody></table>
+      <p class="small">Dana pembeli ditahan di rekening bersama GearVault sampai verifikasi akun selesai dan pembeli konfirmasi penerimaan.</p>
+    </div>
+
+    <div class="tab" id="wallet">
+      <div class="stat" style="max-width:340px;">
+        <div class="l">Saldo tersedia</div>
+        <div class="n" id="balDisplay2">Rp 0</div>
+      </div>
+      <h3 style="margin-top:20px;">Deposit</h3>
+      <input id="depAmount" placeholder="Nominal, contoh 200000" type="number">
+      <div class="paybtns">
+        <button onclick="deposit('QRIS')">QRIS</button>
+        <button onclick="deposit('VA BCA')">VA BCA</button>
+        <button onclick="deposit('GoPay')">GoPay</button>
+        <button onclick="deposit('OVO')">OVO</button>
+      </div>
+      <h3 style="margin-top:22px;">Tarik saldo</h3>
+      <input id="wdAmount" placeholder="Nominal penarikan" type="number">
+      <button class="buybtn" style="max-width:180px;" onclick="withdraw()">Tarik ke rekening</button>
+      <p class="small" style="margin-top:14px;">Semua data pembayaran dan kredensial akun dienkripsi end-to-end dan tidak dapat dibaca oleh staf GearVault secara langsung.</p>
+    </div>
+
+    <div class="tab" id="admin">
+      <div class="stats" id="adminStats"></div>
+      <h3>Transaksi real-time</h3>
+      <table><thead><tr><th>ID</th><th>Item</th><th>Status</th><th>Nominal</th></tr></thead>
+      <tbody id="adminTxBody"></tbody></table>
+      <h3 style="margin-top:22px;">Keluhan pengguna</h3>
+      <div id="complaintList"></div>
+    </div>
+  </main>
+</div>
+
+<div class="overlay" id="escrowOverlay">
+  <div class="modal">
+    <button class="closebtn" onclick="closeEscrow()">✕</button>
+    <h3 id="escTitle">Proses Rekening Bersama</h3>
+    <p class="small" id="escSub"></p>
+    <div id="escSteps"></div>
+  </div>
+</div>
+
+<div class="toastwrap" id="toastwrap"></div>
+
+<script>
+let balance = 350000;
+const listings = [
+  {id:1, game:'Mobile Legends', tag:'ML', color:'#F4B740', title:'Akun ML Mythic, 120 Skin', price:1250000, seller:'RizkyStore', rating:4.9, verified:true},
+  {id:2, game:'Steam', tag:'ST', color:'#6EE7B7', title:'Steam 45 Game, Level 30', price:2100000, seller:'DigitalHub', rating:4.8, verified:true},
+  {id:3, game:'Genshin Impact', tag:'GI', color:'#8E9BF2', title:'AR 58, 12 Karakter 5★', price:1800000, seller:'AsuraTrade', rating:4.7, verified:true},
+  {id:4, game:'Valorant', tag:'VL', color:'#F27272', title:'Immortal, 20 Skin Bundle', price:950000, seller:'NoxGaming', rating:4.6, verified:false},
+  {id:5, game:'Mobile Legends', tag:'ML', color:'#F4B740', title:'Akun ML Epic, Fresh Start', price:280000, seller:'RizkyStore', rating:4.9, verified:true},
+  {id:6, game:'PUBG Mobile', tag:'PM', color:'#F4B740', title:'Conqueror, Full Skin Glacier', price:1500000, seller:'MobileVault', rating:4.5, verified:true},
+];
+let transactions = [];
+let complaints = [
+  {id:'C-102', user:'budi_88', item:'Steam 45 Game', issue:'Akun diminta ganti email tambahan di luar kesepakatan', status:'open'},
+  {id:'C-101', user:'sari_ml', item:'Akun ML Mythic', issue:'Delay verifikasi lebih dari 1 jam', status:'open'},
+];
+
+function fmt(n){ return 'Rp ' + n.toLocaleString('id-ID'); }
+function updateBalance(){ document.getElementById('balDisplay').textContent = fmt(balance); document.getElementById('balDisplay2').textContent = fmt(balance); }
+
+function renderListings(){
+  const grid = document.getElementById('listingGrid'); grid.innerHTML='';
+  listings.forEach(l=>{
+    const card = document.createElement('div'); card.className='card';
+    card.innerHTML = `
+      <div class="row">
+        <div class="gtag" style="background:${l.color}">${l.tag}</div>
+        ${l.verified ? '<span class="verified">✓ Terverifikasi</span>' : '<span class="sub">Belum diverifikasi</span>'}
+      </div>
+      <div style="font-weight:600;font-size:14.5px;">${l.title}</div>
+      <div class="sub">${l.seller} · ★ ${l.rating}</div>
+      <div class="row"><span class="price">${fmt(l.price)}</span></div>
+      <button class="buybtn" onclick="startEscrow(${l.id})">Beli via Rekening Bersama</button>`;
+    grid.appendChild(card);
+  });
+}
+
+function startEscrow(id){
+  const l = listings.find(x=>x.id===id);
+  if(balance < l.price){ toast('Saldo tidak cukup, isi saldo dulu di tab Wallet'); return; }
+  balance -= l.price; updateBalance();
+  const tx = {id:'TX-'+Math.floor(1000+Math.random()*9000), item:l.title, price:l.price, status:'Dana Ditahan', step:0};
+  transactions.push(tx);
+  document.getElementById('escTitle').textContent = l.title;
+  document.getElementById('escSub').textContent = fmt(l.price) + ' ditahan aman di rekening bersama GearVault.';
+  document.getElementById('escrowOverlay').classList.add('show');
+  const steps = ['Dana ditahan di rekening bersama','Verifikasi otomatis akun berjalan','Penjual mengirim data akun','Pembeli konfirmasi penerimaan','Dana dicairkan ke penjual'];
+  renderSteps(steps, 0);
+  let i = 0;
+  const iv = setInterval(()=>{
+    i++;
+    renderSteps(steps, i);
+    if(i===1){ toast('Verifikasi otomatis: cek status ban, cocokkan email, cek riwayat login...'); }
+    if(i===steps.length-1){
+      tx.status='Selesai'; renderTx(); renderAdmin();
+      toast('Transaksi selesai, dana dicairkan ke '+l.seller);
+      clearInterval(iv);
+    } else {
+      tx.status = i<2 ? 'Verifikasi' : 'Menunggu Konfirmasi';
+      renderTx(); renderAdmin();
+    }
+  }, 1400);
+}
+function renderSteps(steps, activeIdx){
+  const wrap = document.getElementById('escSteps'); wrap.innerHTML='';
+  steps.forEach((s,idx)=>{
+    const done = idx < activeIdx; const now = idx===activeIdx;
+    wrap.innerHTML += `<div class="step"><div class="dotc ${done?'on':''} ${now?'now':''}"></div><div>${s}</div></div>`;
+  });
+}
+function closeEscrow(){ document.getElementById('escrowOverlay').classList.remove('show'); }
+
+function renderTx(){
+  const body = document.getElementById('txBody'); body.innerHTML='';
+  transactions.forEach(t=>{
+    const cls = t.status==='Selesai' ? 'b-done' : 'b-escrow';
+    body.innerHTML += `<tr><td>${t.item}</td><td>Pembeli</td><td><span class="badge ${cls}">${t.status}</span></td><td>${fmt(t.price)}</td></tr>`;
+  });
+  if(transactions.length===0) body.innerHTML = '<tr><td colspan="4" class="sub">Belum ada transaksi.</td></tr>';
+}
+
+function renderAdmin(){
+  const active = transactions.filter(t=>t.status!=='Selesai').length;
+  const gmv = transactions.reduce((a,t)=>a+t.price,0);
+  document.getElementById('adminStats').innerHTML = `
+    <div class="stat"><div class="n">${active}</div><div class="l">Transaksi aktif dalam escrow</div></div>
+    <div class="stat"><div class="n">${fmt(gmv)}</div><div class="l">Total nilai transaksi</div></div>
+    <div class="stat"><div class="n">${complaints.filter(c=>c.status==='open').length}</div><div class="l">Keluhan belum ditangani</div></div>
+    <div class="stat"><div class="n">${listings.filter(l=>l.verified).length}/${listings.length}</div><div class="l">Listing terverifikasi</div></div>`;
+  const body = document.getElementById('adminTxBody'); body.innerHTML='';
+  transactions.slice().reverse().forEach(t=>{
+    const cls = t.status==='Selesai' ? 'b-done' : 'b-escrow';
+    body.innerHTML += `<tr><td>${t.id}</td><td>${t.item}</td><td><span class="badge ${cls}">${t.status}</span></td><td>${fmt(t.price)}</td></tr>`;
+  });
+  if(transactions.length===0) body.innerHTML = '<tr><td colspan="4" class="sub">Belum ada aktivitas.</td></tr>';
+  const cl = document.getElementById('complaintList'); cl.innerHTML='';
+  complaints.forEach(c=>{
+    const cls = c.status==='open' ? 'b-dispute' : 'b-done';
+    cl.innerHTML += `<div class="complaint">
+      <div class="row"><b>${c.id} · ${c.user}</b><span class="badge ${cls}">${c.status==='open'?'Belum ditangani':'Selesai'}</span></div>
+      <div class="sub">${c.item}</div>
+      <div style="margin:6px 0;font-size:13.5px;">${c.issue}</div>
+      ${c.status==='open' ? `<button class="resolvebtn" onclick="resolveComplaint('${c.id}')">Tandai selesai</button>` : ''}
+    </div>`;
+  });
+}
+function resolveComplaint(id){ complaints.find(c=>c.id===id).status='resolved'; renderAdmin(); toast('Keluhan '+id+' ditandai selesai'); }
+
+function deposit(method){
+  const amt = parseInt(document.getElementById('depAmount').value)||0;
+  if(amt<=0){ toast('Masukkan nominal deposit'); return; }
+  balance += amt; updateBalance();
+  toast('Deposit '+fmt(amt)+' via '+method+' berhasil');
+  document.getElementById('depAmount').value='';
+}
+function withdraw(){
+  const amt = parseInt(document.getElementById('wdAmount').value)||0;
+  if(amt<=0 || amt>balance){ toast('Nominal penarikan tidak valid'); return; }
+  balance -= amt; updateBalance();
+  toast('Penarikan '+fmt(amt)+' sedang diproses ke rekeningmu');
+  document.getElementById('wdAmount').value='';
+}
+
+function toast(msg){
+  const t = document.createElement('div'); t.className='toast'; t.textContent = msg;
+  document.getElementById('toastwrap').appendChild(t);
+  setTimeout(()=>t.remove(), 4200);
+  document.getElementById('notifDot').style.display='block';
+}
+function toggleNotif(){ document.getElementById('notifDot').style.display='none'; toast('Semua notifikasi telah dilihat'); }
+
+document.querySelectorAll('.navbtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    document.getElementById(tab).classList.add('active');
+    document.getElementById('pageTitle').textContent = btn.textContent;
+    if(tab==='admin') renderAdmin();
+  });
+});
+
+renderListings(); renderTx(); renderAdmin(); updateBalance();
+</script>
+</body>
+</html>
